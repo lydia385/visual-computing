@@ -1,4 +1,6 @@
 import cv2
+import numpy as np
+
 
 # Load the video
 video = cv2.VideoCapture("video.mp4")
@@ -10,6 +12,13 @@ search_size = 32
 # Set the color for the squares around the similar blocks
 color = (0, 255, 0)
 
+
+def MSE(img1,img2):
+        squared_diff = (img1 -img2) ** 2
+        summed = np.sum(squared_diff)
+        num_pix = img1.shape[0] * img1.shape[1] #img1 and 2 should have same shape
+        err = summed / num_pix
+        return err
 # Initialize the previous frame
 _, prev_frame = video.read()
 prev_frame = cv2.cvtColor(prev_frame, cv2.COLOR_BGR2GRAY)
