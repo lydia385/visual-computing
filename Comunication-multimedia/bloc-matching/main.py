@@ -1,4 +1,5 @@
 import cv2
+import time
 import numpy as np
 img1 = cv2.imread("image.png")
 img2 = cv2.imread("image072.png")
@@ -39,7 +40,7 @@ print(frame.shape)
 # Divide the frame into blocks 16*16
 for i in range(0, frame.shape[0]-16, block_size[0]):
     for j in range(0, frame.shape[1]-16, block_size[1]):
-        cv2.rectangle(img, (j, i), (j+block_size[1], i+block_size[0]), (k, k, k), 2)
+        cv2.rectangle(img, (j, i), (j+block_size[1], i+block_size[0]), (0, k, 0), 2)
         i_base=i
         j_base=j
         # Get the current block
@@ -50,8 +51,6 @@ for i in range(0, frame.shape[0]-16, block_size[0]):
         min_mse = float("inf")
         min_x = 0
         min_y = 0
-        mse1=[]
-        miin=[]
         search_size = 32
         while search_size!=1 and i_base<=frame.shape[0]+block_size[0] and j_base<= frame.shape[1]+block_size[1]:
             for x in range(i-search_size,i+search_size*2-1,search_size):
@@ -59,10 +58,9 @@ for i in range(0, frame.shape[0]-16, block_size[0]):
                         if(x>=0 and y>=0 and (x!=i or y!=j) and x+block_size[0]<frame.shape[0] and y+block_size[1]<frame.shape[1]):
                            # print(i,j,search_size)
                             SearchBlock=frame[x:x+block_size[0],y:y+block_size[1]]
-                            #cv2.rectangle(img2, (y, x), (y+block_size[1], x+block_size[0]), (100, 0 ,0), 2)
+                            cv2.rectangle(img2, (y, x), (y+block_size[1], x+block_size[0]), (100, 0 ,0), 2)
                             mse = meanSquaredError(targetBlock , SearchBlock)
                             if mse < min_mse:
-                                mse1.append([mse,x,y])
                                 min_mse = mse
                                 min_x = x
                                 min_y = y
@@ -75,12 +73,12 @@ for i in range(0, frame.shape[0]-16, block_size[0]):
         
         # Calculate the residual
         print(i,j,min_x,min_y)
-        black_img[i:i+block_size[0],j:j+block_size[1]] =  img2[i:i+block_size[0],j:j+block_size[1]] - img[min_x:min_x+block_size[0], min_y:min_y+block_size[1]]
+        if (min_mse>50):
+         black_img[i:i+block_size[0],j:j+block_size[1]] =  -img2[min_x:min_x+block_size[0],min_y:min_y+block_size[1]] + img[i:i+block_size[0], j:j+block_size[1]]
     
 
     # Surround the similar block with a square of the same color
-        cv2.rectangle(img2, (min_y, min_x), (min_y+block_size[1], min_x+block_size[0]), (k, k, k), 2)
-        # cv2.rectangle(img, (j, i), (j+block_size[1], i+block_size[0]), (0, k, 0), 2)
+       # cv2.rectangle(img2, (min_y, min_x), (min_y+block_size[1], min_x+block_size[0]), (0, k, 0), 2)
         k+=20
   
 
