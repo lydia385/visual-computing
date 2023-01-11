@@ -1,5 +1,5 @@
 import cv2
-#from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error
 
 import numpy as np
 img1 = cv2.imread("image.png")
